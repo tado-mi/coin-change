@@ -9,6 +9,6 @@ to run the code it could be done in one of the following ways.
 - ./coin_change Amount c1 c2 c3 c4 ... cN
 
 where:
-./coin_change : is the program
-Amount : is the total amount required to be achieved
-c1 c2 c3 c4 ... cN : the coins that would be used to get a certain value
+- ./coin_change : is the program
+- Amount : is the total amount required to be achieved
+- c1 c2 c3 c4 ... cN : the coins that would be used to get a certain value
