@@ -6,7 +6,9 @@ Given a value and a limited list of coins the argorithms is supposed to return t
 the build need to happen in the build directory
 run the following commands.
 - make
-\nthen follow instructions in the RUN section
+
+
+then follow instructions in the RUN section
 
 # RUN:
 to run the code it could be done in one of the following ways.
