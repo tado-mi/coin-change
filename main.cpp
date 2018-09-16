@@ -4,7 +4,6 @@
 #define INF ~(1 << 31)
 
 int min_coins(int &a, int &b){
-  std::cout << "a: " << a << " b: " << b << std::endl;
   return(a<b?a:b);
 }
 //template<std::size_t input, std::size_t n>
@@ -51,10 +50,10 @@ int coin_change(const int &input, std::vector<int> &coins){
   //print_element(1.2);
   //initialization for the table
   table[0][0] = 0;
-  std::cout << "the size of the table " << table.size() << std::endl;
+  //std::cout << "the size of the table " << table.size() << std::endl;
   for(unsigned int i = 1; i < input+1; i++)
     table[i][0] = INF;
-  print(table);
+  //print(table);
   for(unsigned int i = 1; i < n; i++){ 
     for(unsigned int j = 0; j < input+1; j++){
       if(j == 0){
@@ -109,11 +108,16 @@ int main(int argc, char* argv[]){
       std::cin >> (*coins)[i];
   }
   else{
+    input = std::stoi(argv[1]);
     coins = new std::vector<int>(argc-1);
-    for(unsigned int i = 3; i < argc; i++)
-      (*coins)[i-2] = std::stoi(argv[i-1]);
+    for(unsigned int i = 2; i < argc; i++)
+      (*coins)[i-1] = std::stoi(argv[i]);
   }		
+  int c_change = coin_change(input, *coins);
+  if(c_change == INF)
+	  std::cout << "The coins provided cannot give the total value required " << std::endl;
+  else
+	  std::cout << "The number of coins used to get the value " << input << " is : " << coin_change(input , *coins) << std::endl;
 
-  std::cout << "The number of coins used to get the value " << input << " is : " << coin_change(input , *coins) << std::endl;
   return 1;
 }
