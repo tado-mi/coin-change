@@ -11,19 +11,19 @@ void print(std::vector< std::vector<int> > &table){
   //int table[input][n] = *my_table;
   std::cout << std::endl;
   int input = table.size();
-  int n = table[0].size(); 
+  int n = table[0].size();
   for(unsigned int i = 0; i < n; i++){
     for(unsigned int j = 0; j < input; j++){
       //std::cout << table <<std::endl
-      if(table[j][i] == INF)
+        if(table[j][i] == INF)
 	      std::cout << "I ";
-      else std::cout << table[j][i] << " "; 
+      else std::cout << table[j][i] << " ";
     }
     std::cout << std::endl;
   }
 }
 /*
-   int coin_change_T(int &input, int &c_i , int** &table){	
+   int coin_change_T(int &input, int &c_i , int** &table){
    if(input == 0) return 0;
    else return ~(1 << 32);
    for(unsigned int j = 0; j < input; j++)
@@ -31,7 +31,7 @@ void print(std::vector< std::vector<int> > &table){
    table[i][j] = min_coins(table[i-1][j], table[i-1][j-c_i]+1)
 //table[i][j] = min_coins(coin_change_T(j,coins, i-1, table), coin_change_T(j-coins[i], coins, i-1, table)+1)
 }
-*/	
+*/
 template<typename C , std::size_t N , std::size_t M>
 void print_element(C (&ele)[N][M]){
   for(unsigned int i = 0; i < N; i++)
@@ -54,23 +54,23 @@ int coin_change(const int &input, std::vector<int> &coins){
   for(unsigned int i = 1; i < input+1; i++)
     table[i][0] = INF;
   //print(table);
-  for(unsigned int i = 1; i < n; i++){ 
+  for(unsigned int i = 1; i < n; i++){
     for(unsigned int j = 0; j < input+1; j++){
       if(j == 0){
-	table[j][i] = 0; 
+	table[j][i] = 0;
 	continue;
       }
       int a = table[j][i-1];
       int b = 0;
       if(((int)j - coins[i]) < 0){
-        b = INF; 
+        b = INF;
         //continue;
       }
       else
         b = table[j-coins[i]][i-1];
       	if(b != INF)
 		b++;
-      
+
       //std::cout << "i : " << i << " , j : " << j << std::endl;
       //std::cout << "min coins " << min_coins(a, b) <<std::endl;
       table[j][i] = min_coins(a, b);
@@ -85,39 +85,58 @@ int coin_change(const int &input, std::vector<int> &coins){
 }
 
 int main(int argc, char* argv[]){
-  int input = 0;
-  int n = 0;
+
+  int a = 0; // amount
+  int n = 0; // number of coins
   std::vector<int> *coins;
-  if( argc == 1 ){
-    int n;
-    std::cout << "what is the value that you are looking for: ";
-    std::cin >> input;
+  if (argc < 3) { // the number of provided arguments is less than 3
+
+    if (argc == 2) { // amount is provided
+
+      a = std::stoi(argv[1]);
+
+    } else { // amount is not provided
+
+      std::cout << "what is the value that you are looking for: ";
+      std::cin >> a;
+
+    }
+
+    // record the coins
     std::cout << "how many coins would you like to provide: ";
     std::cin >> n;
-    coins = new std::vector<int>(n+1);
-    for(unsigned int i = 1; i < n+1; i++)
+    n = n + 1;
+    coins = new std::vector<int>(n);
+    for(unsigned int i = 1; i < n; i++)
       std::cin >> (*coins)[i];
 
+  } else {
+
+    // amount is provided
+    a = std::stoi(argv[1]);
+
+    // coins are provided
+    n = argc - 1;
+    coins = new std::vector<int>(n);
+    for(unsigned int i = 2; i < argc; i++) {
+
+      (*coins)[i - 1] = std::stoi(argv[i]);
+
+    }
+
   }
-  else if( argc == 2 ){
-    input = std::stoi(argv[1]);
-    std::cout << "how many coins would you like to provide: ";
-    std::cin >> n;	
-    coins = new std::vector<int>(n+1);
-    for(unsigned int i = 1; i < n+1; i++)
-      std::cin >> (*coins)[i];
-  }
-  else{
-    input = std::stoi(argv[1]);
-    coins = new std::vector<int>(argc-1);
-    for(unsigned int i = 2; i < argc; i++)
-      (*coins)[i-1] = std::stoi(argv[i]);
-  }		
-  int c_change = coin_change(input, *coins);
-  if(c_change == INF)
+
+  int ans = coin_change(a, *coins);
+  if(ans == INF) {
+
 	  std::cout << "The coins provided cannot give the total value required " << std::endl;
-  else
-	  std::cout << "The number of coins used to get the value " << input << " is : " << coin_change(input , *coins) << std::endl;
 
-  return 1;
+  } else {
+
+	  std::cout << "The number of coins used to get the value " << a << " is : " << ans << std::endl;
+
+  }
+
+  return 0;
+
 }
