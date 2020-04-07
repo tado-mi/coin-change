@@ -3,85 +3,95 @@
 
 #define INF ~(1 << 31)
 
-int min_coins(int &a, int &b){
-  return(a<b?a:b);
-}
-//template<std::size_t input, std::size_t n>
-void print(std::vector< std::vector<int> > &table){
-  //int table[input][n] = *my_table;
-  std::cout << std::endl;
-  int input = table.size();
-  int n = table[0].size();
-  for(unsigned int i = 0; i < n; i++){
-    for(unsigned int j = 0; j < input; j++){
-      //std::cout << table <<std::endl
-        if(table[j][i] == INF)
-	      std::cout << "I ";
-      else std::cout << table[j][i] << " ";
-    }
-    std::cout << std::endl;
-  }
-}
-/*
-   int coin_change_T(int &input, int &c_i , int** &table){
-   if(input == 0) return 0;
-   else return ~(1 << 32);
-   for(unsigned int j = 0; j < input; j++)
-   if(j-c_i < 0) continue;
-   table[i][j] = min_coins(table[i-1][j], table[i-1][j-c_i]+1)
-//table[i][j] = min_coins(coin_change_T(j,coins, i-1, table), coin_change_T(j-coins[i], coins, i-1, table)+1)
-}
-*/
-template<typename C , std::size_t N , std::size_t M>
-void print_element(C (&ele)[N][M]){
-  for(unsigned int i = 0; i < N; i++)
-    for(unsigned int j = 0; j < M; j++)
-      std::cout << ele[i][j] << std::endl;
-}
-//template<std::size_t N
-int coin_change(const int &input, std::vector<int> &coins){
-  //pass code here
-  const int n = coins.size();
-  std::vector< std::vector< int > > table(input+1 , std::vector<int>(n));
-  //int** table = new int[input][n];
-  //print_element(a);
-  //print_element('c');
-  //print_element(true);
-  //print_element(1.2);
-  //initialization for the table
-  table[0][0] = 0;
-  //std::cout << "the size of the table " << table.size() << std::endl;
-  for(unsigned int i = 1; i < input+1; i++)
-    table[i][0] = INF;
-  //print(table);
-  for(unsigned int i = 1; i < n; i++){
-    for(unsigned int j = 0; j < input+1; j++){
-      if(j == 0){
-	table[j][i] = 0;
-	continue;
-      }
-      int a = table[j][i-1];
-      int b = 0;
-      if(((int)j - coins[i]) < 0){
-        b = INF;
-        //continue;
-      }
-      else
-        b = table[j-coins[i]][i-1];
-      	if(b != INF)
-		b++;
+int coin_change(const int &val, std::vector<int> &coins) {
 
-      //std::cout << "i : " << i << " , j : " << j << std::endl;
-      //std::cout << "min coins " << min_coins(a, b) <<std::endl;
-      table[j][i] = min_coins(a, b);
-      //if(table[j][i] < INF)
-	//table[j][i]++;
-      //std::cout << "printing the table while evaluating the problem at j : " << j <<  std::endl;
-      //print(table);
+  const int n = coins.size();
+
+  /*
+    table[val + 1][n]: the solution matrix
+    table[i][j]: the optimal solution for value i, using c_0 ... c_j coins
+
+    > final answer will be in table[val][n - 1]
+  */
+  std::vector< std::vector<int> > table(val + 1, std::vector<int>(n));
+
+  // initialization
+  for(unsigned int i = 0; i < n; i = i + 1) {
+
+    for(unsigned int j = 0; j < val + 1; j = j + 1) {
+
+      // it is impossible to pay any amount i with using no coins
+      table[j][i] = INF; // ie it would require an inifine amount of coins
+
     }
+
   }
-  //print(table);
-  return table[input][n-1];
+
+  // initialization
+  for(unsigned int i = 0; i < n; i = i + 1) {
+
+      // it is impossible to pay any amount i with using no coins
+      table[0][i] = 0; // ie it would require an inifine amount of coins
+
+  }
+
+  table[0][0] = 0; // one can pay value 0 with 0 coins
+
+  // for(unsigned int i = 1; i < n; i = i + 1) {
+
+  for(unsigned int j = 0; j < val + 1; j = j + 1) {
+
+    for(unsigned int i = 1; i < n; i = i + 1) {
+
+      // assume there is no solution for table[j][i]
+      int sol = INF;
+
+      /* consider:
+        using the coin[i]
+        a solution for the amount = j - coins[i]
+      */
+      int amount = j - coins[i];
+      if ( amount >= 0) {
+
+        // the optimal solution for amount using up to i - 1 coins
+        int tmp = table[amount][i - 1];
+
+        /* note:
+          if we add coin[i], we can pay j = amount + coin[i]
+          thus, tmp + 1 is a candidate for an optimal solution for table[j][i]
+        */
+        if (tmp != INF) {
+
+          sol = tmp + 1;
+
+        }
+
+      }
+
+      /* note:
+        table[j][i - 1] is an optimal solution for value j, not using coin[i]
+        thus, it is also a candidate for an optimal solution for table[j][i]
+      */
+      // > update solution if applicable
+      if (sol > table[j][i - 1]) {
+
+        sol = table[j][i - 1];
+
+      }
+
+      // update table[j][i] if needed
+      if (table[j][i] > sol) {
+
+        table[j][i] = sol;
+
+      }
+
+    }
+
+  }
+
+  return table[val][n - 1];
+
 }
 
 int main(int argc, char* argv[]){
