@@ -1,9 +1,11 @@
 #include<iostream>
 #include<vector>
 
+using namespace std;
+
 #define INF ~(1 << 31)
 
-int coin_change(const int &val, std::vector<int> &coins) {
+int coin_change(const int &val, vector<int> &coins) {
 
   const int n = coins.size();
 
@@ -13,38 +15,42 @@ int coin_change(const int &val, std::vector<int> &coins) {
 
     > final answer will be in table[val][n - 1]
   */
-  std::vector< std::vector<int> > table(val + 1, std::vector<int>(n));
+  vector< vector<int> > table(val + 1, vector<int>(n));
 
   // initialization
-  for(unsigned int i = 0; i < n; i = i + 1) {
+  for(unsigned int i = 0; i < val + 1; i = i + 1) {
 
-    for(unsigned int j = 0; j < val + 1; j = j + 1) {
+    for(unsigned int j = 0; j < n; j = j + 1) {
 
       // it is impossible to pay any amount i with using no coins
-      table[j][i] = INF; // ie it would require an inifine amount of coins
+      table[i][j] = INF; // ie it would require an inifine amount of coins
 
     }
 
   }
 
-  // initialization
-  for(unsigned int i = 0; i < n; i = i + 1) {
+  for(unsigned int j = 0; j < n; j = j + 1) {
 
-      // it is impossible to pay any amount i with using no coins
-      table[0][i] = 0; // ie it would require an inifine amount of coins
+      table[0][j] = 0; // // one can pay value 0 with j coins for any j
 
   }
 
-  table[0][0] = 0; // one can pay value 0 with 0 coins
-
-  // for(unsigned int i = 1; i < n; i = i + 1) {
-
   for(unsigned int j = 0; j < val + 1; j = j + 1) {
+
+    /*
+      let sol be a temporary variable to minimize over all possible solutions
+    */
+
+    // assume there is no solution for table[j][i]
+    int sol = INF;
 
     for(unsigned int i = 1; i < n; i = i + 1) {
 
-      // assume there is no solution for table[j][i]
-      int sol = INF;
+      /* note:
+        table[j][i - 1] is an optimal solution for value j, not using coin[i]
+        thus, it is also a candidate for an optimal solution for table[j][i]
+      */
+      sol = table[j][i - 1];
 
       /* consider:
         using the coin[i]
@@ -60,34 +66,29 @@ int coin_change(const int &val, std::vector<int> &coins) {
           if we add coin[i], we can pay j = amount + coin[i]
           thus, tmp + 1 is a candidate for an optimal solution for table[j][i]
         */
-        if (tmp != INF) {
+        if (tmp != INF) { // condition required to account for overflows
 
-          sol = tmp + 1;
+          tmp = tmp + 1;
 
         }
 
-      }
+        if (sol > tmp) {
 
-      /* note:
-        table[j][i - 1] is an optimal solution for value j, not using coin[i]
-        thus, it is also a candidate for an optimal solution for table[j][i]
-      */
-      // > update solution if applicable
-      if (sol > table[j][i - 1]) {
+          sol = tmp;
 
-        sol = table[j][i - 1];
+        }
 
-      }
+        // update table[j][i] if needed
+        if (table[j][i] > sol) {
 
-      // update table[j][i] if needed
-      if (table[j][i] > sol) {
+          table[j][i] = sol;
 
-        table[j][i] = sol;
+        }
+
 
       }
 
     }
-
   }
 
   return table[val][n - 1];
@@ -98,39 +99,40 @@ int main(int argc, char* argv[]){
 
   int a = 0; // amount
   int n = 0; // number of coins
-  std::vector<int> *coins;
+  vector<int> *coins;
   if (argc < 3) { // the number of provided arguments is less than 3
 
     if (argc == 2) { // amount is provided
 
-      a = std::stoi(argv[1]);
+      a = stoi(argv[1]);
 
     } else { // amount is not provided
 
-      std::cout << "what is the value that you are looking for: ";
-      std::cin >> a;
+      cout << "Enter the amount: ";
+      cin >> a;
 
     }
 
     // record the coins
-    std::cout << "how many coins would you like to provide: ";
-    std::cin >> n;
+    cout << "Enter the number of coins: ";
+    cin >> n;
     n = n + 1;
-    coins = new std::vector<int>(n);
+    coins = new vector<int>(n);
+    cout << "Enter the coins (each on a new line): " << endl;
     for(unsigned int i = 1; i < n; i++)
-      std::cin >> (*coins)[i];
+      cin >> (*coins)[i];
 
   } else {
 
     // amount is provided
-    a = std::stoi(argv[1]);
+    a = stoi(argv[1]);
 
     // coins are provided
     n = argc - 1;
-    coins = new std::vector<int>(n);
+    coins = new vector<int>(n);
     for(unsigned int i = 2; i < argc; i++) {
 
-      (*coins)[i - 1] = std::stoi(argv[i]);
+      (*coins)[i - 1] = stoi(argv[i]);
 
     }
 
@@ -139,11 +141,11 @@ int main(int argc, char* argv[]){
   int ans = coin_change(a, *coins);
   if(ans == INF) {
 
-	  std::cout << "The coins provided cannot give the total value required " << std::endl;
+	  cout << "There is no solution." << endl;
 
   } else {
 
-	  std::cout << "The number of coins used to get the value " << a << " is : " << ans << std::endl;
+	  cout << "The answer is: " << ans << "." << endl;
 
   }
 
